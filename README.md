@@ -5,3 +5,6 @@ instruction for running
 2-cd SystemPlusTest
 3-npm install
 4-npm run dev
+
+live-dem0
+https://abubakarnaveed-systemplus-assesment.netlify.app/
