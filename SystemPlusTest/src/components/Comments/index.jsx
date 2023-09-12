@@ -3,18 +3,32 @@ import "../../Styles/Comments/comment.css";
 import Comment from "./Comment";
 import IMG from "../../assets/images/user1.png";
 import Send from "../../assets/images/send.svg";
-import { commentsData, userData } from "../../Data";
-import { useSelector } from "react-redux";
+import { userData } from "../../Data";
+import { useSelector, useDispatch } from "react-redux";
+import { addComment } from "../../redux/commentSlice";
+
 const Comments = () => {
-  // const [comments, setComments] = useState(commentsData);
-  // const displayParentComments = (com) => {
-  //   const parentComments = com.filter(
-  //     (comment) => comment.commentParentID === null
-  //   );
-  //   return parentComments;
-  // };
-  // // console.log(displayParentComments(comments));
   const comments = useSelector((state) => state.comments.commentList);
+  const [inputText, setInputText] = useState("");
+  const dispatch = useDispatch();
+  const handleCommentAdd = () => {
+    if (inputText != "") {
+      const newUser = {
+        commentID: `${Math.random()}`,
+        userID: userData.userID,
+        commentParentID: null,
+        name: userData.name,
+        pic: userData.pic,
+        likes: 0,
+        comment: inputText,
+      };
+
+      dispatch(addComment(newUser));
+      setInputText("");
+    } else {
+      alert("Write something");
+    }
+  };
   return (
     <div className="main__body">
       <div className="main__wrapper">
@@ -32,6 +46,7 @@ const Comments = () => {
                   commenterID={comment.userID}
                   userId={userData.userID}
                   comment={comment.comment}
+                  commentID={comment.commentID}
                 />
               );
             })}
@@ -49,8 +64,15 @@ const Comments = () => {
           <div className="comment__body">
             <div className="reply__section --main">
               <div className="reply__section__wrapper">
-                <input type="text" placeholder="Write your comment" />
-                <button>
+                <input
+                  type="text"
+                  placeholder="Write your comment"
+                  value={inputText}
+                  onChange={(e) => {
+                    setInputText(e.target.value);
+                  }}
+                />
+                <button onClick={() => handleCommentAdd()}>
                   <img src={Send} />
                 </button>
               </div>

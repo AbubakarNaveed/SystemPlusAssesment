@@ -3,24 +3,34 @@ import Unlike from "../../assets/images/unlike.svg";
 import Like from "../../assets/images/like.svg";
 import Send from "../../assets/images/send.svg";
 import "../../Styles/Comments/comment.css";
+import { useDispatch } from "react-redux";
+import { removeComment, commentLike } from "../../redux/commentSlice";
 const ReplyComment = ({
   userId,
   pic,
   name,
   comment,
   likes,
-
+  commentID,
   commenterID,
 }) => {
   const [commentState, setCommentState] = useState({
     like: false,
     reply: false,
   });
-  const handleLikeChange = () => {
-    setCommentState({ ...commentState, like: !commentState.like });
-  };
+
   const handleReplyChange = () => {
     setCommentState({ ...commentState, reply: !commentState.reply });
+  };
+  const dispatch = useDispatch();
+  const handleCommentRemove = () => {
+    dispatch(removeComment(commentID));
+  };
+  const handleLikeChange = async () => {
+    await dispatch(
+      commentLike({ commentID: commentID, likeStatus: commentState.like })
+    );
+    setCommentState({ ...commentState, like: !commentState.like });
   };
   return (
     <div className="reply__comment__body">
@@ -62,7 +72,9 @@ const ReplyComment = ({
                     Reply
                   </p>
                 ) : (
-                  <p className="remove">Remove</p>
+                  <p className="remove" onClick={() => handleCommentRemove()}>
+                    Remove
+                  </p>
                 )}
               </button>
             </div>

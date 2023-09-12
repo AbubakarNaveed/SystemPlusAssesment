@@ -4,27 +4,68 @@ import Unlike from "../../assets/images/unlike.svg";
 import Like from "../../assets/images/like.svg";
 import Send from "../../assets/images/send.svg";
 import IMG from "../../assets/images/user2.png";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  removeComment,
+  addComment,
+  commentLike,
+} from "../../redux/commentSlice";
 
 import "../../Styles/Comments/comment.css";
+import { userData } from "../../Data";
 const Comment = ({
   userId,
   pic,
   name,
   comment,
   likes,
-  replies,
   commenterID,
+  commentID,
 }) => {
+  const dispatch = useDispatch();
+  const [inputText, setInputText] = useState("");
+
+  const handleCommentAdd = () => {
+    if (inputText != "") {
+      const newComment = {
+        commentID: `${Math.random()}`,
+        userID: userData.userID,
+        commenterID: userData.userID,
+        commentParentID: commentID,
+        name: userData.name,
+        pic: userData.pic,
+        likes: 0,
+        comment: inputText,
+      };
+      console.log(newComment);
+      dispatch(addComment(newComment));
+      setInputText("");
+    } else {
+      alert("Write something");
+    }
+  };
+  const replyComments = useSelector((state) => state.comments.commentList);
+  const handleCommentRemove = () => {
+    dispatch(removeComment(commentID));
+  };
   const [commentState, setCommentState] = useState({
     like: false,
     reply: false,
   });
-  const handleLikeChange = () => {
+  const handleLikeChange = async () => {
+    await dispatch(
+      commentLike({ commentID: commentID, likeStatus: commentState.like })
+    );
     setCommentState({ ...commentState, like: !commentState.like });
   };
   const handleReplyChange = () => {
     setCommentState({ ...commentState, reply: !commentState.reply });
   };
+  let rc = replyComments.filter((comment) => {
+    console.log(`${comment.commentParentID} and ${commentID}`);
+    comment.commentParentID === commentID;
+  });
+  console.log(rc);
   return (
     <div className="comment__body">
       <div className="image__section">
@@ -65,12 +106,34 @@ const Comment = ({
                     Reply
                   </p>
                 ) : (
-                  <p className="remove">Remove</p>
+                  <p
+                    className="remove"
+                    onClick={() => {
+                      handleCommentRemove();
+                    }}
+                  >
+                    Remove
+                  </p>
                 )}
               </button>
             </div>
           </div>
-          {}
+          {replyComments
+            .filter((comment) => comment.commentParentID === commentID)
+            .map((comment, key) => {
+              return (
+                <ReplyComment
+                  name={comment.name}
+                  key={key}
+                  likes={comment.likes}
+                  pic={comment.pic}
+                  commenterID={comment.userID}
+                  userId={userId}
+                  comment={comment.comment}
+                  commentID={comment.commentID}
+                />
+              );
+            })}
           {/* <ReplyComment
             name="Alex Benjamin"
             comment="Home sweet home! I'm glad you are back. It's been two year and miss the football matches we have together. A lot has been changed since you left. Let's meet at the ground tomorrow evening?"
@@ -81,8 +144,17 @@ const Comment = ({
           {commentState.reply ? (
             <div className="reply__section">
               <div className="reply__section__wrapper">
-                <input type="text" placeholder="Write your comment" />
-                <button>
+                <input
+                  type="text"
+                  placeholder="Write your comment"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                />
+                <button
+                  onClick={() => {
+                    handleCommentAdd();
+                  }}
+                >
                   <img src={Send} />
                 </button>
               </div>

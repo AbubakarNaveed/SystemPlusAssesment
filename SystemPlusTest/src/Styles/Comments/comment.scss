@@ -136,6 +136,7 @@
       .like__section {
         display: flex;
         gap: 4px;
+        width: 30px;
         button {
           border: none;
           background: none;
@@ -176,4 +177,10 @@
 .reply__comment__body {
   display: flex;
   gap: 12px;
+}
+
+@media only screen and (max-width: 349px) {
+  .comment__body {
+    min-width: 275px;
+  }
 }

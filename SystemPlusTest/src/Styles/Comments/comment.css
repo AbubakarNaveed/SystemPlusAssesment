@@ -130,6 +130,7 @@
 .text__section .comment__functions .non__reply__section .like__section {
   display: flex;
   gap: 4px;
+  width: 30px;
 }
 .text__section .comment__functions .non__reply__section .like__section button {
   border: none;
@@ -164,4 +165,10 @@
 .reply__comment__body {
   display: flex;
   gap: 12px;
+}
+
+@media only screen and (max-width: 349px) {
+  .comment__body {
+    min-width: 275px;
+  }
 }/*# sourceMappingURL=comment.css.map */
